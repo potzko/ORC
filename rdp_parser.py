@@ -2,6 +2,7 @@ import json
 import tok
 from ASL_factorys import *
 
+factory = s_exp_factory
 factory = ast_factory
 
 class parser:
@@ -10,8 +11,7 @@ class parser:
 
     def parse(self, st):
         self.st = st
-        self.tokens.st = self.st
-        self.tokens.ind = 0
+        self.tokens.reset(self.st)
         return self.main()
      
     @property
@@ -60,7 +60,35 @@ class parser:
         return factory.expression_statement(ret)
 
     def expression(self):
-        return self.literal()
+        return self.addative_expression()
+    
+    def addative_expression(self):
+        return self.binary_expression(self.multiplicative_expression, 'AdditiveOperator')
+    
+    def multiplicative_expression(self):
+        return self.binary_expression(self.primary_expression, 'MultiplicativeOperator')
+    
+    def binary_expression(self, op_type, op_token):
+        left = op_type()
+        while self.look_ahead['type'] == op_token:
+            operator = self.tokens.eat(op_token)
+            right = op_type()
+            left = factory.additive_operator(left, right, operator)
+        return left
+
+
+    def primary_expression(self):
+        match self.look_ahead['type']:
+            case '(':
+                return self.parenthesized_expression()
+            case _:
+                return self.literal()
+
+    def parenthesized_expression(self):
+        self.tokens.eat('(')
+        ret = self.expression()
+        self.tokens.eat(')')
+        return ret
 
     def string_literal(self):
         return factory.string_literal(self.tokens.eat('StringLiteral'))
@@ -78,14 +106,7 @@ class parser:
                 raise Exception(f'non supported literal type, found {self.look_ahead}')
 
 code ="""
-{
-    {
-        123;;
-        321;
-        "123";
-        '321';
-    }
-}
+"123";
 """
 
 if __name__ == '__main__':

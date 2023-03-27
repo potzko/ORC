@@ -4,17 +4,6 @@ def ty(**kwargs):
     return kwargs
 
 spec = [
-    # int literal
-    (r'([0-9]+)', 'NumericLiteral'),
-    # string literal
-    (r'"([^"]*)"' , 'StringLiteral'),
-    (r"'([^']*)'" , 'StringLiteral'),
-    # delimiters
-    (r"(;)"         , ';'),
-    (r"({)"         , '{'),
-    (r"(})"         , '}'),
-
-
     # white space
     (r'( +)'         , None),
     # new line
@@ -22,10 +11,33 @@ spec = [
     # comments
     (r'(//[^\n]*)\n' , None),
     (r'(/\*[^/]*/)'  , None),
+
+    # int literal
+    (r'([0-9]+)'  , 'NumericLiteral'),
+    # string literal
+    (r'"([^"]*)"' , 'StringLiteral'),
+    (r"'([^']*)'" , 'StringLiteral'),
+
+    #addative ops
+    (r"(\+|-)"      , 'AdditiveOperator'),
+
+    #multiplicative ops
+    (r"(\*|\/|\%)"   , 'MultiplicativeOperator'),
+
+    # delimiters
+    (r"(;)"       , ';'),
+    (r"({)"       , '{'),
+    (r"(})"       , '}'),
+    (r"(\()"       , '('),
+    (r"(\))"       , ')'),
 ]
 
 class tokenizer:
     def __init__(self, st) -> None:
+        self.st = st
+        self.ind = 0
+
+    def reset(self, st):
         self.st = st
         self.ind = 0
 
@@ -41,7 +53,7 @@ class tokenizer:
                 self.ind += len(mat.group(1))
                 return self.next_token()
             return ty(type = type, value = mat.group(return_value))
-        
+
         if self.ind == len(self.st):
             return None
         raise Exception(f'could not tokenize {self.st}')
@@ -49,9 +61,11 @@ class tokenizer:
     def eat(self, tock_type):
         ret = self.next_token(return_value=1)
         if ret == None:
-            raise Exception(f'unexpected file end, expected {tock_type}')
+            a = f'unexpected file end, expected {tock_type}'
+            raise Exception(a)
         if ret['type'] != tock_type:
-            raise Exception('unexpected token. expected {0} found {1} instead'.format(tock_type, ret))
+            a = 'unexpected token. expected {0} found {1} instead'.format(tock_type, ret)
+            raise Exception(a)
         point_len = len(self.next_token(return_value=0)['value'])
         self.ind += point_len
 

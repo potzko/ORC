@@ -25,7 +25,9 @@ class ast_factory:
     
     def pretty(tree):
         return json.dumps(tree, indent=4)
- 
+    
+    def additive_operator(left, right, operator):
+        return ty(type = 'BinaryExpression', left = left, right = right, operator = operator)
 
 
 # s expretion factory
@@ -43,10 +45,13 @@ class s_exp_factory:
         return f'"{tree}"'
 
     def numeric_literal(tree):
-        return tree
+        return int(tree)
     
     def expression_statement(tree):
         return tree
     
+    def additive_operator(left, right, operator):
+        return (operator, left, right)
+
     def pretty(tree):
         return json.dumps(tree, indent=4)

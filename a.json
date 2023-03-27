@@ -2,45 +2,11 @@
     "type": "Program",
     "body": [
         {
-            "type": "BlockStatement",
-            "body": [
-                {
-                    "type": "BlockStatement",
-                    "body": [
-                        {
-                            "type": "ExpressionStatement",
-                            "Expression": {
-                                "type": "NumericLiteral",
-                                "value": 123
-                            }
-                        },
-                        {
-                            "type": "EmptyStatement"
-                        },
-                        {
-                            "type": "ExpressionStatement",
-                            "Expression": {
-                                "type": "NumericLiteral",
-                                "value": 321
-                            }
-                        },
-                        {
-                            "type": "ExpressionStatement",
-                            "Expression": {
-                                "type": "StringLiteral",
-                                "value": "123"
-                            }
-                        },
-                        {
-                            "type": "ExpressionStatement",
-                            "Expression": {
-                                "type": "StringLiteral",
-                                "value": "321"
-                            }
-                        }
-                    ]
-                }
-            ]
+            "type": "ExpressionStatement",
+            "Expression": {
+                "type": "StringLiteral",
+                "value": "123"
+            }
         }
     ]
 }
