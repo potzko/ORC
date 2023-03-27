@@ -106,7 +106,7 @@ class parser:
                 raise Exception(f'non supported literal type, found {self.look_ahead}')
 
 code ="""
-"123";
+(1 + 2 * 3 + (4 + 5) * 6) + 1 * 2;
 """
 
 if __name__ == '__main__':
