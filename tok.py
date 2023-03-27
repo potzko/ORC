@@ -1,6 +1,7 @@
 import re
 import json as js
-from jsonS import ty
+def ty(**kwargs):
+    return kwargs
 
 spec = [
     # int literal

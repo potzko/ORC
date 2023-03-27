@@ -1,49 +1,6 @@
 import json
-from jsonS import *
 import tok
-
-# ast factory
-class ast_factory:
-    def program(tree):
-        return json.dumps(tree)
-
-    def empty_statement():
-        return ty(type = 'EmptyStatement')
-    
-    def block_statement(tree):
-        return ty(type = 'BlockStatement', body = tree)
-    
-    def string_literal(tree):
-        return ty(type = 'StringLiteral', value = tree)
-
-    def numeric_literal(tree):
-        return ty(type = 'NumericLiteral', value = int(tree))
-    
-    def expression_statement(tree):
-        return ty(type = 'ExpressionStatement', Expression = tree)
- 
-
-
-# s expretion factory
-class s_exp_factory:
-    def program(tree):
-        return ['begin', tree]
-    
-    def empty_statement():
-        return {}
-
-    def block_statement(tree):
-        return ['begin', tree]
-
-    def string_literal(tree):
-        return f'"{tree}"'
-
-    def numeric_literal(tree):
-        return tree
-    
-    def expression_statement(tree):
-        return tree
-    
+from ASL_factorys import *
 
 factory = ast_factory
 
@@ -66,7 +23,7 @@ class parser:
         return self.program()
     
     def program(self):
-        return ty(type = 'Program', body = self.statment_list())
+        return factory.program(self.statment_list())
     
     # either a statement or a statment list
     def statment_list(self, stop = None):
@@ -87,7 +44,7 @@ class parser:
 
     def empty_statement(self):
         self.tokens.eat(';')
-        return ty(type = 'EmptyStatement')
+        return factory.empty_statement()
 
     def block_statement(self):
         self.tokens.eat('{')
@@ -95,21 +52,21 @@ class parser:
         if not self.look_ahead['type'] == '}':
             body = self.statment_list(stop='}')
         self.tokens.eat('}')
-        return ty(type = 'BlockStatement', body = body)
+        return factory.block_statement(body)
 
     def expression_statement(self):
         ret = self.expression()
         self.tokens.eat(';')
-        return(ret)
+        return factory.expression_statement(ret)
 
     def expression(self):
         return self.literal()
 
     def string_literal(self):
-        return ty(type = 'StringLiteral', value = self.tokens.eat('StringLiteral'))
+        return factory.string_literal(self.tokens.eat('StringLiteral'))
 
     def numeric_literal(self):
-        return ty(type = 'NumericLiteral', value = int(self.tokens.eat('NumericLiteral')))
+        return factory.numeric_literal(self.tokens.eat('NumericLiteral'))
     
     def literal(self):
         match self.look_ahead['type']:
@@ -132,7 +89,8 @@ code ="""
 """
 
 if __name__ == '__main__':
-    print(parser().parse(code))
+    code = parser().parse(code)
+    code = factory.pretty(code)
     with open('a.json', 'w') as a:
-        #a.write(dp_print(parser().parse(code)))
-        pass
+        print(code)
+        a.write(str(code))
