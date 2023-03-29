@@ -18,11 +18,18 @@ spec = [
     (r'"([^"]*)"' , 'StringLiteral'),
     (r"'([^']*)'" , 'StringLiteral'),
 
+    #assignment ops
+    (r"([\+\*\/\-\%]=)" , 'ComplexAssign'),
+
     #addative ops
-    (r"(\+|-)"      , 'AdditiveOperator'),
+    (r"(\+|-)"          , 'AdditiveOperator'),
 
     #multiplicative ops
-    (r"(\*|\/|\%)"   , 'MultiplicativeOperator'),
+    (r"(\*|\/|\%)"      , 'MultiplicativeOperator'),
+
+    #assignment ops
+    (r"(=)"             , 'SimpleAssign'),
+
 
     # delimiters
     (r"(;)"       , ';'),
@@ -30,6 +37,10 @@ spec = [
     (r"(})"       , '}'),
     (r"(\()"       , '('),
     (r"(\))"       , ')'),
+
+    # identifier
+    (r"([a-zA-Z_][a-zA-Z_0-9]*)", 'Identifier'),
+
 ]
 
 class tokenizer:
@@ -50,12 +61,13 @@ class tokenizer:
         
         for mat, exp, type in matches:
             if type == None:
-                self.ind += len(mat.group(1))
+                self.ind += len(mat.group(0))
                 return self.next_token()
             return ty(type = type, value = mat.group(return_value))
 
         if self.ind == len(self.st):
             return None
+        
         raise Exception(f'could not tokenize {self.st}')
 
     def eat(self, tock_type):

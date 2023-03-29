@@ -28,7 +28,7 @@ class parser:
     # either a statement or a statment list
     def statment_list(self, stop = None):
         ret = []
-        while (self.look_ahead != None) and self.look_ahead['type'] != stop:
+        while (self.look_ahead != None):
             ret.append(self.statment())
         return ret
 
@@ -60,8 +60,37 @@ class parser:
         return factory.expression_statement(ret)
 
     def expression(self):
-        return self.addative_expression()
+        return self.assignment_expression()
     
+    def assignment_expression(self):
+        left = self.addative_expression()
+
+        if not self.look_ahead['type'] in ['SimpleAssign', 'ComplexAssign']:
+            return left
+
+        op = self.assignment_operator()
+        left = self.check_valid_assignment_target(left)
+        right = self.assignment_expression()
+
+        return factory.assignment_expression(left,right,op)
+
+    def left_side_expression(self):
+        return self.identifier()
+
+    def identifier(self):
+        name = self.tokens.eat('Identifier')
+        return factory.identifier(name)
+    
+    def check_valid_assignment_target(self, left):
+        if factory.get_type(left) == 'Identifier':
+            return left
+        raise Exception('invalid left hand identifier')
+
+    def assignment_operator(self):
+        if self.look_ahead['type'] == 'SimpleAssign':
+            return self.tokens.eat('SimpleAssign')
+        return self.tokens.eat('ComplexAssign')
+
     def addative_expression(self):
         return self.binary_expression(self.multiplicative_expression, 'AdditiveOperator')
     
@@ -73,16 +102,20 @@ class parser:
         while self.look_ahead['type'] == op_token:
             operator = self.tokens.eat(op_token)
             right = op_type()
-            left = factory.additive_operator(left, right, operator)
+            left = factory.binary_operator(left, right, operator)
         return left
 
+    def is_literal(self, token_type):
+        return token_type in ['StringLiteral', 'NumericLiteral'] 
 
     def primary_expression(self):
+        if self.is_literal(self.look_ahead['type']):
+            return self.literal()
         match self.look_ahead['type']:
             case '(':
                 return self.parenthesized_expression()
             case _:
-                return self.literal()
+                return self.left_side_expression()
 
     def parenthesized_expression(self):
         self.tokens.eat('(')
@@ -106,7 +139,7 @@ class parser:
                 raise Exception(f'non supported literal type, found {self.look_ahead}')
 
 code ="""
-(1 + 2 * 3 + (4 + 5) * 6) + 1 * 2;
+a = b + 5;
 """
 
 if __name__ == '__main__':
