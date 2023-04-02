@@ -9,6 +9,7 @@ statement:
 	let identifier:
 		= expression;
 		;
+		:= expression;
 	expression ;
 	;
 

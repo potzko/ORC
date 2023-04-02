@@ -1,5 +1,6 @@
 import orc_tokenizer as tokenizer
-class orc_parser:
+
+class parser:
     def __init__(self, code = '') -> None:
         self.tok = tokenizer.tokenizer(st = code)
     
@@ -62,9 +63,15 @@ class orc_parser:
     def let_statement(self):
         self.eat('let')
         id = self.identifier()
-        self.eat('op_=')
-        val = self.expression_statement()
-        return ('let', id, val)
+        match self.lookahead[0]:
+            case 'op_=':
+                self.eat('op_=')
+                return ('let', id, self.expression_statement())
+            case 'op_:=' :
+                self.eat('op_:=')
+                return ('let_arr', id, self.expression_statement())
+
+        
 
     def block_statement(self):
         self.eat('{')
@@ -177,17 +184,13 @@ class orc_parser:
             
         
 code = """
-fn main:
-{
-    a = 25 + 22 - 23;
-    return a;
-}
+let a = b = c;
 """
 
 def pprint(ast):
     import json
     print(json.dumps(ast, indent=4))
 if __name__ == '__main__':
-    p = orc_parser(code=code)
-    print(p.program())
+    p = parser(code=code)
+    print(p.statement())
 
