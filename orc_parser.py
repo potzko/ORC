@@ -184,7 +184,7 @@ class parser:
             
         
 code = """
-let a = b = c;
+let a = -*+a;
 """
 
 def pprint(ast):

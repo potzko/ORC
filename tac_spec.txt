@@ -10,6 +10,18 @@ move to R0, *(symbol + literal)
 add R0, R1, R2
 move to R0, R1 + R2
 
+and R0, R1, R2
+move to R0, the value R1 && R2
+
+or R0, R1, R2
+move to R0, the value R1 || R2
+
+not R0, R1
+move to R0, the value !R1
+
+or R0, R1, R2
+move to R0, the value R1 ^ R2
+
 neg R0, R1
 move to R0, -R1
 
