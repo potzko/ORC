@@ -1,5 +1,5 @@
-import tokenizer
-class parser:
+import orc_tokenizer as tokenizer
+class orc_parser:
     def __init__(self, code = '') -> None:
         self.tok = tokenizer.tokenizer(st = code)
     
@@ -18,7 +18,7 @@ class parser:
         return self.function_decleration_block()
     
     def function_decleration_block(self):
-        ret = []
+        ret = ['fn_block']
         while self.lookahead[0] != 'eof':
             ret.append(self.function_decleration())
         return ret
@@ -29,17 +29,19 @@ class parser:
         if self.lookahead[0] == ':':
             self.eat(':')
             return ('fn', name, tuple(), self.statement())
+        delimiter  = ':'
+        if self.lookahead[0] == '(':
+            self.eat('(')
+            delimiter = ')'
         variables = [self.identifier()]
-        while self.lookahead[0] != ':':
+        while self.lookahead[0] != delimiter:
             self.eat(',')
             variables.append(self.identifier())
+        if delimiter == ')':
+            self.eat(')')
         self.eat(':')
+
         return ('fn', name, variables, self.statement())
-    
-    def function_call(self):
-        ret = ('call', self.eat('function_call'), self.comma_expression())
-        self.eat(')')
-        return ret
 
     def statement(self):
         match self.lookahead[0]:
@@ -71,14 +73,13 @@ class parser:
         return ret
 
     def statement_list(self, delimiter = 'eof'):
-        ret = []
+        ret = ['statement_list']
         while self.lookahead[0] != delimiter:
             ret.append(self.statement())
         return ret
 
     def if_statement(self):
         ret = self.conditional_statement('if')
-        print(ret)
         if self.lookahead[0] == 'else':
             self.eat('else')
             return (*ret, self.statement())
@@ -120,9 +121,10 @@ class parser:
             case 'identifier'       : return self.identifier()
             case 'function_call'    : return self.function_call()
 
-
-    def left_expression(self):
-        self.identifier()
+    def function_call(self):
+        ret = ('call', self.eat('function_call'), self.comma_expression())
+        self.eat(')')
+        return ret
 
     def identifier(self):
         ret = self.lookahead
@@ -130,7 +132,7 @@ class parser:
         return ret
 
     def comma_expression(self):
-        ret = [',', self.expression()]
+        ret = ['comma_expression', self.expression()]
         while self.lookahead[0] == ',':
             self.eat(',')
             ret.append(self.expression())
@@ -174,17 +176,18 @@ class parser:
                 return ret
             
         
-
-
 code = """
 fn main:
-    print(himom, im, -gay);
+{
+    a = 25 + 22 - 23;
+    return a;
+}
 """
 
 def pprint(ast):
     import json
     print(json.dumps(ast, indent=4))
 if __name__ == '__main__':
-    p = parser(code=code)
-    pprint(p.program())
+    p = orc_parser(code=code)
+    print(p.program())
 

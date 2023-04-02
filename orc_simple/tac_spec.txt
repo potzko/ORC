@@ -1,0 +1,32 @@
+NOP
+no operation
+
+init R0, symbol, literal
+move to R0, *symbol + literal
+
+ADD R0, R1, R2
+move to R0, R1 + R2
+
+Neg R0, R1
+move to R0, -R1
+
+copy R0, R1
+move to R0 the value from R1
+
+read R0, R1
+move to R0, *R1
+
+write R0, R1
+move to *R0, R1
+
+EQ R0, R1, R2
+move to R0, R1 == R2
+
+ifnz R0, lable
+if R0 != 0 jump to lable
+
+fcall R0, R1, R2
+move to R0, the result of the function at *R1, using the variables [0,1,2...] that start at R2
+
+ret R0
+return the result in R0
