@@ -1,3 +1,8 @@
+sp -> stack pointer
+bp -> stack register
+
+
+
 NOP
 no operation
 
@@ -19,7 +24,7 @@ move to R0, the value R1 || R2
 not R0, R1
 move to R0, the value !R1
 
-or R0, R1, R2
+xor R0, R1, R2
 move to R0, the value R1 ^ R2
 
 neg R0, R1
@@ -43,11 +48,26 @@ move to R0, *R1
 write R0, R1
 move to *R0, R1
 
-EQ R0, R1, R2
+neq R0, R1, R2
+move to R0, R1 != R2
+
+eq R0, R1, R2
 move to R0, R1 == R2
 
 ifnz R0, lable
 if R0 != 0 jump to lable
+
+setb R0, R1, R2
+set R0 to R1 < R2
+
+setbe R0, R1, R2
+set R0 to R1 <= R2
+
+jmp lable
+jump to lable
+
+push R0
+push R0 to the stack
 
 fcall R0, R1, R2
 move to R0, the result of the function at *R1, using the variables [0,1,2...] that start at R2

@@ -71,7 +71,6 @@ class parser:
                 self.eat('op_:=')
                 return ('let_arr', id, self.expression_statement())
 
-        
 
     def block_statement(self):
         self.eat('{')
@@ -113,10 +112,10 @@ class parser:
     def unary_expression(self):
         if self.lookahead[0] == 'unary_op':
             return ('unary_op', self.eat('unary_op'), self.unary_expression())
-        return self.asignment_expression()
+        return self.single_expression()
 
     def expression(self):
-        return self.unary_expression()
+        return self.asignment_expression()
     
     def single_expression(self):
         match self.lookahead[0]:
@@ -184,7 +183,11 @@ class parser:
             
         
 code = """
-let a = -*+a;
+if a {
+    b;
+} else {
+    c;
+}
 """
 
 def pprint(ast):

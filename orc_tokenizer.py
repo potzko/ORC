@@ -25,7 +25,7 @@ spec = [
     (r"(:=) "                    ,'op_:='),
 
     # unary ops
-    (r"(\+|-|&|\*|\!)"          , 'unary_op'),
+    (r"(\+|-|&|\!)"          , 'unary_op'),
 
 
 
@@ -52,7 +52,6 @@ spec = [
 
     # identifier
     (r"([a-zA-Z_][a-zA-Z_0-9]*)", 'identifier'),
-
 ]
 
 class tokenizer:
